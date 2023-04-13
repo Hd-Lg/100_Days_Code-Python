@@ -1,0 +1,1 @@
+        print(higher_bid)
