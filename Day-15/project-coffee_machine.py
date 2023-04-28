@@ -57,6 +57,35 @@ def check_resources(order_ingredients):
         return True
 
 
+def process_coins():
+    """Return total from coins inserted"""
+    print("Please insert coins.")
+    total = int(input("How many quarters? $0.25: ")) * 0.25
+    total += int(input("How many dimes? $0.10: ")) * 0.10
+    total += int(input("How many nickles? $0.05: ")) * 0.05
+    total += int(input("How many pennies? $0.01: ")) * 0.01
+    return total
+
+
+def is_transaction_passed(money, drink_cost):
+    """Return True when payment is accepted, False otherwise"""
+    if money >= drink_cost:
+        global profit
+        profit += drink_cost
+        change = round(money - drink_cost, 2)
+        print(f"Here is your change: ${change}")
+        return True
+    else:
+        print("Sorry, that's not enough money. Money refunded.")
+        return False
+
+
+def make_coffee(name, ingredients):
+    for item in ingredients:
+        resources[item] -= ingredients[item]
+    print(f"Here is your {name}. Enjoy!")
+
+
 is_running = True
 while is_running:
     user_choice = input("What would you like? (espresso/latte/cappuccino): ")
@@ -69,26 +98,24 @@ while is_running:
         case "espresso":
             if check_resources(espresso_ing):
                 enough_resources = True
-            price = MENU[user_choice]["cost"]
+                price = MENU[user_choice]["cost"]
+                print(f"${price}")
+                payment = process_coins()
+                if is_transaction_passed(payment, price):
+                    make_coffee(user_choice, espresso_ing)
         case "latte":
             if check_resources(latte_ing):
                 enough_resources = True
-            price = MENU[user_choice]["cost"]
+                price = MENU[user_choice]["cost"]
+                print(f"${price}")
+                payment = process_coins()
+                if is_transaction_passed(payment, price):
+                    make_coffee(user_choice, latte_ing)
         case "cappuccino":
             if check_resources(cappuccino_ing):
                 enough_resources = True
-            price = MENU[user_choice]["cost"]
-    print(f"${price}")
-    print("Please insert coins.")
-    quarters = int(input("How many quarters? $0.25: "))
-    dimes = int(input("How many dimes? $0.10: "))
-    nickles = int(input("How many nickles? $0.05: "))
-    pennies = int(input("How many pennies? $0.01: "))
-    total = quarters + dimes + nickles + pennies
-    give_back = total - price
-
-    if total < price:
-        print("Sorry, that's not enough money. Money refunded.")
-    else:
-        print(f"Here is ${give_back:.2f} in change.")
-        print(f"Here is your {user_choice}. Enjoy!")
+                price = MENU[user_choice]["cost"]
+                print(f"${price}")
+                payment = process_coins()
+                if is_transaction_passed(payment, price):
+                    make_coffee(user_choice, cappuccino_ing)
